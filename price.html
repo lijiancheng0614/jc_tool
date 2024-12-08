@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>价格计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .section h3 {
+            margin-top: 0;
+        }
+        select, input {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .add-section {
+            text-align: center;
+            cursor: pointer;
+            font-size: 24px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>价格计算器</h1>
+        <div id="sections">
+            <div class="section">
+                <h3>商品 1</h3>
+                <label for="weight1">输入重量:</label>
+                <input type="number" id="weight1" placeholder="输入重量" oninput="calculate(1)">
+                <select id="weightUnit1" onchange="calculate(1)">
+                    <option value="g">克</option>
+                    <option value="kg">千克</option>
+                    <option value="jin">斤</option>
+                </select>
+                <label for="amount1">输入金额:</label>
+                <input type="number" id="amount1" placeholder="输入金额" oninput="calculate(1)">
+                <select id="amountUnit1" onchange="calculate(1)">
+                    <option value="CNY">元</option>
+                    <option value="USD">美元</option>
+                </select>
+                <p>每斤价格: <span id="price1">0.00</span> 元</p>
+            </div>
+            <div class="section">
+                <h3>商品 2</h3>
+                <label for="weight2">输入重量:</label>
+                <input type="number" id="weight2" placeholder="输入重量" oninput="calculate(2)">
+                <select id="weightUnit2" onchange="calculate(2)">
+                    <option value="g">克</option>
+                    <option value="kg">千克</option>
+                    <option value="jin">斤</option>
+                </select>
+                <label for="amount2">输入金额:</label>
+                <input type="number" id="amount2" placeholder="输入金额" oninput="calculate(2)">
+                <select id="amountUnit2" onchange="calculate(2)">
+                    <option value="CNY">元</option>
+                    <option value="USD">美元</option>
+                </select>
+                <p>每斤价格: <span id="price2">0.00</span> 元</p>
+            </div>
+        </div>
+        <button class="add-section" onclick="addSection()">+ 添加商品</button>
+    </div>
+    <script>
+    let sectionCount = 2;
+
+    function calculate(section) {
+        const weightInput = document.getElementById(`weight${section}`).value;
+        const weightUnit = document.getElementById(`weightUnit${section}`).value;
+        const amountInput = document.getElementById(`amount${section}`).value;
+        const amountUnit = document.getElementById(`amountUnit${section}`).value;
+
+        if (weightInput > 0 && amountInput > 0) {
+            let weightInJin;
+            if (weightUnit === 'g') {
+                weightInJin = weightInput / 500; // 1斤 = 500克
+            } else if (weightUnit === 'kg') {
+                weightInJin = weightInput * 2; // 1斤 = 0.5千克
+            } else {
+                weightInJin = weightInput; // 直接以斤计算
+            }
+
+            let amountInCNY = amountInput;
+            if (amountUnit === 'USD') {
+                amountInCNY = amountInput * 7; // 假设1美元 = 7元
+            }
+
+            const pricePerJin = (amountInCNY / weightInJin).toFixed(2);
+            document.getElementById(`price${section}`).innerText = pricePerJin;
+        } else {
+            document.getElementById(`price${section}`).innerText = '0.00';
+        }
+    }
+
+    function addSection() {
+        sectionCount++;
+        const newSection = document.createElement('div');
+        newSection.className = 'section';
+        newSection.innerHTML = `
+            <h3>商品 ${sectionCount}</h3>
+            <label for="weight${sectionCount}">输入重量:</label>
+            <input type="number" id="weight${sectionCount}" placeholder="输入重量" oninput="calculate(${sectionCount})">
+            <select id="weightUnit${sectionCount}" onchange="calculate(${sectionCount})">
+                <option value="g">克</option>
+                <option value="kg">千克</option>
+                <option value="jin">斤</option>
+            </select>
+            
+            <label for="amount${sectionCount}">输入金额:</label>
+            <input type="number" id="amount${sectionCount}" placeholder="输入金额" oninput="calculate(${sectionCount})">
+            <select id="amountUnit${sectionCount}" onchange="calculate(${sectionCount})">
+                <option value="CNY">元</option>
+                <option value="USD">美元</option>
+            </select>
+            
+            <p>每斤价格: <span id="price${sectionCount}">0.00</span> 元</p>
+        `;
+        document.getElementById('sections').appendChild(newSection);
+    }
+    </script>
+</body>
+</html>
